@@ -389,12 +389,72 @@ function StudentPage() {
 }
 
 function RegisterStorePage() {
-  const [message, setMessage] = useState('')
+  const initialStoreForm = {
+    store_name: '',
+    category: '',
+    location: '',
+    position: '',
+    wage: '',
+    contact: '',
+    student_friendly_points: '',
+  }
 
-  function handleSubmit(event) {
+  const [storeForm, setStoreForm] = useState(initialStoreForm)
+  const [message, setMessage] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  function handleInputChange(event) {
+    const { name, value } = event.target
+
+    setStoreForm((currentForm) => ({
+      ...currentForm,
+      [name]: value,
+    }))
+  }
+
+  async function handleSubmit(event) {
     event.preventDefault()
-    // 지금은 Supabase 저장을 하지 않고, 다음 단계에서 저장 기능을 붙일 자리만 남깁니다.
-    setMessage('다음 단계에서 Supabase 저장을 연결합니다.')
+
+    // Supabase에 보내기 전에 필수 입력값이 모두 채워졌는지 먼저 확인합니다.
+    const hasEmptyRequiredValue = Object.values(storeForm).some(
+      (value) => value.trim() === '',
+    )
+
+    if (hasEmptyRequiredValue) {
+      setMessage('필수 입력값을 모두 입력해주세요.')
+      return
+    }
+
+    setIsSubmitting(true)
+    setMessage('등록 중...')
+
+    // DB 컬럼 이름과 같은 key로 정리해두면 어떤 값이 저장되는지 바로 확인할 수 있습니다.
+    const storePayload = {
+      store_name: storeForm.store_name.trim(),
+      category: storeForm.category.trim(),
+      location: storeForm.location.trim(),
+      position: storeForm.position.trim(),
+      wage: storeForm.wage.trim(),
+      contact: storeForm.contact.trim(),
+      student_friendly_points: storeForm.student_friendly_points.trim(),
+      status: 'pending',
+    }
+
+    try {
+      const { error } = await supabase.from('stores').insert([storePayload])
+
+      if (error) {
+        throw error
+      }
+
+      setMessage('가게 등록이 완료되었습니다. 검토 후 공개됩니다.')
+      setStoreForm(initialStoreForm)
+    } catch (error) {
+      console.error('가게 등록 실패:', error)
+      setMessage('가게 등록에 실패했습니다. 입력값을 다시 확인해주세요.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -411,46 +471,88 @@ function RegisterStorePage() {
         <form className="form-card" onSubmit={handleSubmit}>
           <label className="form-field">
             <span>가게 이름</span>
-            <input name="storeName" type="text" placeholder="예: workin 카페" />
+            <input
+              name="store_name"
+              type="text"
+              placeholder="예: workin 카페"
+              value={storeForm.store_name}
+              onChange={handleInputChange}
+            />
           </label>
 
           <label className="form-field">
             <span>업종</span>
-            <input name="category" type="text" placeholder="예: 카페, 식당" />
+            <input
+              name="category"
+              type="text"
+              placeholder="예: 카페, 식당"
+              value={storeForm.category}
+              onChange={handleInputChange}
+            />
           </label>
 
           <label className="form-field">
             <span>위치</span>
-            <input name="location" type="text" placeholder="예: 서울 마포구" />
+            <input
+              name="location"
+              type="text"
+              placeholder="예: 서울 마포구"
+              value={storeForm.location}
+              onChange={handleInputChange}
+            />
           </label>
 
           <label className="form-field">
             <span>모집 포지션</span>
-            <input name="position" type="text" placeholder="예: 홀 스태프" />
+            <input
+              name="position"
+              type="text"
+              placeholder="예: 홀 스태프"
+              value={storeForm.position}
+              onChange={handleInputChange}
+            />
           </label>
 
           <label className="form-field">
             <span>시급</span>
-            <input name="hourlyPay" type="text" placeholder="예: 12,000원" />
+            <input
+              name="wage"
+              type="text"
+              placeholder="예: 12,000원"
+              value={storeForm.wage}
+              onChange={handleInputChange}
+            />
           </label>
 
           <label className="form-field">
             <span>연락처</span>
-            <input name="contact" type="text" placeholder="예: 010-0000-0000" />
+            <input
+              name="contact"
+              type="text"
+              placeholder="예: 010-0000-0000"
+              value={storeForm.contact}
+              onChange={handleInputChange}
+            />
           </label>
 
           <label className="form-field full">
             <span>유학생에게 어필할 점</span>
             <textarea
-              name="studentFriendlyPoint"
+              name="student_friendly_points"
               placeholder="예: 시간표 조율 가능, 서류 협조 가능, 영어 응대 가능"
               rows="4"
+              value={storeForm.student_friendly_points}
+              onChange={handleInputChange}
             ></textarea>
           </label>
 
           <div className="form-actions">
-            <button className="button primary" type="submit">
-              가게 등록하기
+            <button
+              className="button primary"
+              type="submit"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? '등록 중...' : '가게 등록하기'}
             </button>
             <a className="button secondary" href={routeMap.home}>
               홈으로 돌아가기
