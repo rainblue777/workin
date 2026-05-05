@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { supabase } from './lib/supabaseClient'
 import './App.css'
 
 const studentGuides = [
@@ -45,6 +46,18 @@ const routeMap = {
 
 function getCurrentRoute() {
   return window.location.hash || routeMap.home
+}
+
+function getStoreText(value) {
+  if (Array.isArray(value)) {
+    return value.length > 0 ? value.join(', ') : '정보 없음'
+  }
+
+  if (value === null || value === undefined || value === '') {
+    return '정보 없음'
+  }
+
+  return value
 }
 
 function App() {
@@ -190,6 +203,46 @@ function LandingPage() {
 
 function StudentPage() {
   const [message, setMessage] = useState('')
+  const [stores, setStores] = useState([])
+  const [isStoresLoading, setIsStoresLoading] = useState(true)
+  const [storesError, setStoresError] = useState(false)
+
+  useEffect(() => {
+    let isMounted = true
+
+    async function loadApprovedStores() {
+      setIsStoresLoading(true)
+      setStoresError(false)
+
+      // Supabase에서 공개 승인된 가게만 가져옵니다. 아직 추천 계산이나 로그인은 연결하지 않습니다.
+      const { data, error } = await supabase
+        .from('stores')
+        .select(
+          'store_name, category, location, position, wage, student_friendly_points',
+        )
+        .eq('status', 'approved')
+        .order('created_at', { ascending: false })
+
+      if (!isMounted) {
+        return
+      }
+
+      if (error) {
+        setStores([])
+        setStoresError(true)
+      } else {
+        setStores(data ?? [])
+      }
+
+      setIsStoresLoading(false)
+    }
+
+    loadApprovedStores()
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
 
   function handleSubmit(event) {
     event.preventDefault()
@@ -271,6 +324,65 @@ function StudentPage() {
             </p>
           )}
         </form>
+      </section>
+
+      <section className="student-stores-section" aria-labelledby="stores-title">
+        <div className="store-section-header">
+          <p className="section-kicker">Friendly stores</p>
+          <h2 id="stores-title">유학생 친화 가게</h2>
+          <p>유학생이 일하기 좋은 조건을 가진 승인 가게를 확인해보세요.</p>
+        </div>
+
+        {isStoresLoading && (
+          <p className="store-state" role="status">
+            가게 정보를 불러오는 중입니다...
+          </p>
+        )}
+
+        {!isStoresLoading && storesError && (
+          <p className="store-state error" role="alert">
+            가게 정보를 불러오지 못했습니다.
+          </p>
+        )}
+
+        {!isStoresLoading && !storesError && stores.length === 0 && (
+          <p className="store-state">아직 공개된 가게가 없습니다.</p>
+        )}
+
+        {!isStoresLoading && !storesError && stores.length > 0 && (
+          <div className="store-grid">
+            {stores.map((store, index) => (
+              <article
+                className="store-card"
+                key={`${store.store_name}-${store.location}-${index}`}
+              >
+                <div className="store-card-header">
+                  <span>{getStoreText(store.category)}</span>
+                  <h3>{getStoreText(store.store_name)}</h3>
+                </div>
+
+                <dl className="store-details">
+                  <div>
+                    <dt>위치</dt>
+                    <dd>{getStoreText(store.location)}</dd>
+                  </div>
+                  <div>
+                    <dt>모집 포지션</dt>
+                    <dd>{getStoreText(store.position)}</dd>
+                  </div>
+                  <div>
+                    <dt>시급</dt>
+                    <dd>{getStoreText(store.wage)}</dd>
+                  </div>
+                  <div className="store-friendly-point">
+                    <dt>유학생에게 좋은 점</dt>
+                    <dd>{getStoreText(store.student_friendly_points)}</dd>
+                  </div>
+                </dl>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
     </main>
   )

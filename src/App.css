@@ -378,6 +378,111 @@
   font-weight: 800;
 }
 
+.student-stores-section {
+  width: min(920px, 100%);
+  margin: 36px auto 0;
+}
+
+.store-section-header {
+  max-width: 680px;
+  margin-bottom: 20px;
+}
+
+.store-section-header h2 {
+  margin: 0;
+  color: var(--text-strong);
+  font-size: 32px;
+  line-height: 1.22;
+  letter-spacing: 0;
+}
+
+.store-section-header p:last-child {
+  margin: 12px 0 0;
+  color: var(--text);
+  line-height: 1.7;
+}
+
+.store-state {
+  margin: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 18px;
+  color: var(--text);
+  background: var(--surface);
+  font-weight: 800;
+}
+
+.store-state.error {
+  border-color: rgba(249, 115, 22, 0.35);
+  color: #b45309;
+  background: #fff7ed;
+}
+
+.store-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.store-card {
+  display: grid;
+  gap: 18px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 22px;
+  background: var(--surface);
+  box-shadow: 0 16px 36px rgba(27, 54, 49, 0.07);
+}
+
+.store-card-header span {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  border-radius: 8px;
+  padding: 4px 10px;
+  color: var(--brand);
+  background: #eefaf7;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.store-card-header h3 {
+  margin: 12px 0 0;
+  color: var(--text-strong);
+  font-size: 22px;
+  line-height: 1.32;
+  letter-spacing: 0;
+}
+
+.store-details {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+}
+
+.store-details div {
+  display: grid;
+  gap: 4px;
+}
+
+.store-details dt {
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.store-details dd {
+  margin: 0;
+  color: var(--text-strong);
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.store-friendly-point {
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+
 @media (max-width: 820px) {
   .form-page {
     padding: 22px 18px 56px;
@@ -423,6 +528,18 @@
   .form-card {
     grid-template-columns: 1fr;
     padding: 20px;
+  }
+
+  .student-stores-section {
+    margin-top: 30px;
+  }
+
+  .store-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .store-section-header h2 {
+    font-size: 28px;
   }
 }
 
