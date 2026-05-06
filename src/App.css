@@ -378,6 +378,125 @@
   font-weight: 800;
 }
 
+.school-guide-result {
+  margin-top: 20px;
+}
+
+.school-guide-state {
+  margin: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 18px;
+  color: var(--text);
+  background: var(--surface);
+  font-weight: 800;
+}
+
+.school-guide-state.error {
+  border-color: rgba(249, 115, 22, 0.35);
+  color: #b45309;
+  background: #fff7ed;
+}
+
+.school-guide-card {
+  display: grid;
+  gap: 22px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 24px;
+  background: var(--surface);
+  box-shadow: 0 20px 45px rgba(27, 54, 49, 0.08);
+}
+
+.condition-summary {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 20px;
+}
+
+.condition-summary h2,
+.school-guide-content h2 {
+  margin: 0;
+  color: var(--text-strong);
+  font-size: 24px;
+  line-height: 1.3;
+  letter-spacing: 0;
+}
+
+.condition-list,
+.school-guide-details {
+  display: grid;
+  gap: 14px;
+  margin: 16px 0 0;
+}
+
+.condition-list {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.school-guide-details {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.condition-list div,
+.school-guide-details div {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.condition-list dt,
+.school-guide-details dt {
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.condition-list dd,
+.school-guide-details dd {
+  margin: 0;
+  color: var(--text-strong);
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.school-guide-content {
+  display: grid;
+  gap: 18px;
+}
+
+.school-guide-block {
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+
+.school-guide-block h3 {
+  margin: 0 0 10px;
+  color: var(--text-strong);
+  font-size: 17px;
+  line-height: 1.35;
+}
+
+.school-guide-block ol,
+.school-guide-block ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding-left: 20px;
+  color: var(--text-strong);
+  line-height: 1.7;
+}
+
+.school-guide-block p {
+  margin: 0;
+  color: var(--text-strong);
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.school-guide-block li {
+  overflow-wrap: anywhere;
+}
+
 .student-stores-section {
   width: min(920px, 100%);
   margin: 36px auto 0;
@@ -532,6 +651,15 @@
 
   .student-stores-section {
     margin-top: 30px;
+  }
+
+  .school-guide-card {
+    padding: 20px;
+  }
+
+  .condition-list,
+  .school-guide-details {
+    grid-template-columns: 1fr;
   }
 
   .store-grid {
