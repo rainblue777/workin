@@ -229,51 +229,127 @@
 
 .info-section {
   width: 100%;
-  padding: 76px 24px;
+  padding: 96px 28px;
 }
 
 .student-section {
+  position: relative;
   border-top: 1px solid var(--border);
+  padding-top: 92px;
+  padding-bottom: 164px;
+  background: #ffffff;
+}
+
+.student-section::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 64px;
+  width: min(1180px, calc(100% - 56px));
+  height: 1px;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    90deg,
+    rgba(15, 118, 110, 0),
+    rgba(15, 118, 110, 0.34),
+    rgba(15, 118, 110, 0)
+  );
 }
 
 .owner-section {
-  border-top: 1px solid var(--border);
-  background: var(--soft-bg);
+  width: calc(100% - 56px);
+  margin: 72px auto 104px;
+  border: 1px solid rgba(15, 118, 110, 0.22);
+  border-radius: 8px;
+  padding: 124px 28px 132px;
+  background: linear-gradient(180deg, #e2f7ef 0%, #f3fcf8 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    0 24px 60px rgba(27, 54, 49, 0.08);
 }
 
 .section-header {
-  width: min(1120px, 100%);
-  max-width: 720px;
-  margin: 0 auto 30px;
+  width: min(1180px, 100%);
+  max-width: 780px;
+  margin: 0 auto 52px;
+}
+
+.landing-page .section-header {
+  display: grid;
+  gap: 16px;
+}
+
+.landing-page .section-kicker {
+  display: inline-flex;
+  width: max-content;
+  min-height: 30px;
+  align-items: center;
+  border: 1px solid rgba(15, 118, 110, 0.14);
+  border-radius: 8px;
+  margin: 0;
+  padding: 0 11px;
+  color: var(--brand);
+  background: #eefaf7;
+  font-size: 13px;
+}
+
+.owner-section .section-kicker {
+  background: #ffffff;
 }
 
 .section-header h2 {
   margin: 0;
   color: var(--text-strong);
-  font-size: 34px;
+  font-size: 36px;
   line-height: 1.24;
   letter-spacing: 0;
 }
 
+.landing-page .section-header p:not(.section-kicker) {
+  max-width: 680px;
+  margin: 0;
+  color: var(--text);
+  font-size: 18px;
+  line-height: 1.75;
+}
+
 /* 카드 배열만 바꾸면 안내 항목을 쉽게 추가하거나 줄일 수 있습니다. */
 .feature-grid {
-  width: min(1120px, 100%);
+  width: min(1180px, 100%);
   margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
+  gap: 28px;
+  align-items: stretch;
 }
 
 .feature-card {
-  min-height: 180px;
-  border: 1px solid var(--border);
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 16px;
+  min-height: 220px;
+  border: 1px solid #cbdcd6;
   border-radius: 8px;
-  padding: 24px;
+  padding: 32px;
   background: var(--surface);
+  box-shadow: 0 18px 42px rgba(27, 54, 49, 0.1);
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.owner-section .feature-card {
+  border-color: rgba(15, 118, 110, 0.26);
+  box-shadow: 0 18px 44px rgba(15, 118, 110, 0.12);
+}
+
+.feature-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 24px 52px rgba(27, 54, 49, 0.14);
 }
 
 .feature-card h3 {
-  margin: 0 0 12px;
+  margin: 0;
   color: var(--text-strong);
   font-size: 21px;
   line-height: 1.35;
@@ -629,7 +705,27 @@
   }
 
   .info-section {
-    padding: 56px 18px;
+    padding: 68px 18px;
+  }
+
+  .student-section {
+    padding-top: 66px;
+    padding-bottom: 112px;
+  }
+
+  .student-section::after {
+    bottom: 44px;
+    width: calc(100% - 36px);
+  }
+
+  .owner-section {
+    width: calc(100% - 24px);
+    margin: 42px auto 68px;
+    padding: 82px 18px 88px;
+  }
+
+  .section-header {
+    margin-bottom: 34px;
   }
 
   .section-header h2 {
@@ -638,6 +734,12 @@
 
   .feature-grid {
     grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .feature-card {
+    min-height: 178px;
+    padding: 24px;
   }
 
   .form-intro h1 {
@@ -694,6 +796,11 @@
 
   .hero-actions {
     flex-direction: column;
+  }
+
+  .landing-page .section-kicker {
+    min-height: 28px;
+    font-size: 12px;
   }
 
   .button {

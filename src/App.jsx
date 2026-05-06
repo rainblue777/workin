@@ -193,6 +193,10 @@ function LandingPage() {
         <div className="section-header">
           <p className="section-kicker">For students</p>
           <h2>유학생이 먼저 확인해야 할 정보를 쉽게 정리합니다</h2>
+          <p>
+            비자, 학교 절차, 유학생 친화 가게 정보를 한 흐름에서 확인할 수
+            있게 모았습니다.
+          </p>
         </div>
 
         <div className="feature-grid">
@@ -209,6 +213,10 @@ function LandingPage() {
         <div className="section-header">
           <p className="section-kicker">For owners</p>
           <h2>사장님은 유학생에게 필요한 조건을 명확하게 보여줄 수 있습니다</h2>
+          <p>
+            가게의 장점과 근무 조건을 분명하게 보여주어 유학생이 안심하고
+            지원할 수 있게 돕습니다.
+          </p>
         </div>
 
         <div className="feature-grid">
