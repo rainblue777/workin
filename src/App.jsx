@@ -60,6 +60,29 @@ function getStoreText(value) {
   return value
 }
 
+function getGuideText(value) {
+  if (Array.isArray(value)) {
+    return value.length > 0 ? value.join(', ') : '정보 없음'
+  }
+
+  if (value === null || value === undefined || value === '') {
+    return '정보 없음'
+  }
+
+  return value
+}
+
+function getGuideListItems(value) {
+  if (!Array.isArray(value)) {
+    return value ? [String(value)] : []
+  }
+
+  // DB에 배열로 저장된 절차와 서류를 화면에서 읽기 좋은 목록으로 바꿉니다.
+  return value
+    .map((item) => String(item).trim())
+    .filter((item) => item.length > 0)
+}
+
 function App() {
   const [route, setRoute] = useState(getCurrentRoute)
 
@@ -202,10 +225,14 @@ function LandingPage() {
 }
 
 function StudentPage() {
-  const [message, setMessage] = useState('')
   const [stores, setStores] = useState([])
   const [isStoresLoading, setIsStoresLoading] = useState(true)
   const [storesError, setStoresError] = useState(false)
+  const [schoolGuide, setSchoolGuide] = useState(null)
+  const [schoolGuideCondition, setSchoolGuideCondition] = useState(null)
+  const [hasSearchedSchoolGuide, setHasSearchedSchoolGuide] = useState(false)
+  const [isSchoolGuideLoading, setIsSchoolGuideLoading] = useState(false)
+  const [schoolGuideError, setSchoolGuideError] = useState(false)
 
   useEffect(() => {
     let isMounted = true
@@ -244,11 +271,51 @@ function StudentPage() {
     }
   }, [])
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault()
-    // 지금은 추천 계산을 하지 않고, 다음 단계에서 연결될 위치만 사용자에게 알려줍니다.
-    setMessage('다음 단계에서 추천 결과를 연결합니다.')
+
+    const formData = new FormData(event.currentTarget)
+    const schoolName = String(formData.get('schoolName') ?? '').trim()
+
+    const currentCondition = {
+      visaType: formData.get('visaType') || '선택 안 함',
+      schoolName: schoolName || '입력 안 함',
+      koreanLevel: formData.get('koreanLevel') || '선택 안 함',
+      workType: formData.get('workType') || '선택 안 함',
+    }
+
+    setSchoolGuideCondition(currentCondition)
+    setHasSearchedSchoolGuide(true)
+    setIsSchoolGuideLoading(true)
+    setSchoolGuideError(false)
+    setSchoolGuide(null)
+
+    try {
+      // 입력한 학교 이름과 공개 상태가 모두 맞는 안내 정보만 가져옵니다.
+      const { data, error } = await supabase
+        .from('school_guides')
+        .select(
+          'school_name, office_name, summary, process_steps, required_documents, caution_notes',
+        )
+        .eq('school_name', schoolName)
+        .eq('status', 'published')
+        .limit(1)
+
+      if (error) {
+        throw error
+      }
+
+      setSchoolGuide(data?.[0] ?? null)
+    } catch (error) {
+      console.error('학교 안내 정보 조회 실패:', error)
+      setSchoolGuideError(true)
+    } finally {
+      setIsSchoolGuideLoading(false)
+    }
   }
+
+  const processSteps = getGuideListItems(schoolGuide?.process_steps)
+  const requiredDocuments = getGuideListItems(schoolGuide?.required_documents)
 
   return (
     <main className="form-page">
@@ -317,13 +384,104 @@ function StudentPage() {
               홈으로 돌아가기
             </a>
           </div>
-
-          {message && (
-            <p className="form-message" role="status">
-              {message}
-            </p>
-          )}
         </form>
+
+        {hasSearchedSchoolGuide && (
+          <section className="school-guide-result" aria-live="polite">
+            {isSchoolGuideLoading && (
+              <p className="school-guide-state" role="status">
+                학교별 절차를 불러오는 중입니다...
+              </p>
+            )}
+
+            {!isSchoolGuideLoading && schoolGuideError && (
+              <p className="school-guide-state error" role="alert">
+                학교 안내 정보를 불러오지 못했습니다.
+              </p>
+            )}
+
+            {!isSchoolGuideLoading && !schoolGuideError && !schoolGuide && (
+              <p className="school-guide-state">
+                아직 이 학교의 안내 정보는 준비 중입니다.
+              </p>
+            )}
+
+            {!isSchoolGuideLoading && !schoolGuideError && schoolGuide && (
+              <article className="school-guide-card">
+                <div className="condition-summary">
+                  <h2>내 조건 요약</h2>
+                  <dl className="condition-list">
+                    <div>
+                      <dt>비자 종류</dt>
+                      <dd>{schoolGuideCondition?.visaType}</dd>
+                    </div>
+                    <div>
+                      <dt>학교</dt>
+                      <dd>{schoolGuideCondition?.schoolName}</dd>
+                    </div>
+                    <div>
+                      <dt>한국어 수준</dt>
+                      <dd>{schoolGuideCondition?.koreanLevel}</dd>
+                    </div>
+                    <div>
+                      <dt>희망 근무 형태</dt>
+                      <dd>{schoolGuideCondition?.workType}</dd>
+                    </div>
+                  </dl>
+                </div>
+
+                <div className="school-guide-content">
+                  <h2>{getGuideText(schoolGuide.school_name)}</h2>
+                  <dl className="school-guide-details">
+                    <div>
+                      <dt>학교 이름</dt>
+                      <dd>{getGuideText(schoolGuide.school_name)}</dd>
+                    </div>
+                    <div>
+                      <dt>담당 부서</dt>
+                      <dd>{getGuideText(schoolGuide.office_name)}</dd>
+                    </div>
+                    <div>
+                      <dt>요약</dt>
+                      <dd>{getGuideText(schoolGuide.summary)}</dd>
+                    </div>
+                  </dl>
+
+                  <div className="school-guide-block">
+                    <h3>절차</h3>
+                    {processSteps.length > 0 ? (
+                      <ol>
+                        {processSteps.map((step, index) => (
+                          <li key={`${step}-${index}`}>{step}</li>
+                        ))}
+                      </ol>
+                    ) : (
+                      <p>정보 없음</p>
+                    )}
+                  </div>
+
+                  <div className="school-guide-block">
+                    <h3>필요 서류</h3>
+                    {requiredDocuments.length > 0 ? (
+                      <ul>
+                        {requiredDocuments.map((document, index) => (
+                          <li key={`${document}-${index}`}>{document}</li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p>정보 없음</p>
+                    )}
+                  </div>
+
+                  <div className="school-guide-block">
+                    <h3>주의사항</h3>
+                    <p>{getGuideText(schoolGuide.caution_notes)}</p>
+                  </div>
+                </div>
+              </article>
+            )}
+          </section>
+        )}
       </section>
 
       <section className="student-stores-section" aria-labelledby="stores-title">
